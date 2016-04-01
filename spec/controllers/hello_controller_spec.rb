@@ -3,7 +3,8 @@ describe HelloController do
       
       it "should set the greeting field to 'Hello World!'" do 
          hc = HelloController.new 
-         message = hc.greeting
+         hc.index
+         message = hc.instance_variable_get(:@greeting)
          expect(message).to eq "Hello World!"
       end
       
