@@ -1,7 +1,10 @@
+
+
 describe HelloController do 
 
    before :each do
-   	 @controller = HelloController.new(nil) 
+   	 @client = double("client")
+   	 @controller = HelloController.new(client) 
    end
 
    render_views
@@ -40,11 +43,5 @@ describe HelloController do
          expect(message).to eq "Hello World!"
       end
    end
-=begin
-   context "Orchestrate client cool stuff"
-   		let(:client) {mock('client')}
-   		it "gets passed to the right place" do
-   			hc = HelloController.new(client)
-   end
-=end
+
 end
