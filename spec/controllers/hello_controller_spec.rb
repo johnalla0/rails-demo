@@ -31,6 +31,7 @@ describe HelloController do
 	    expect(response).to have_http_status(:unauthorized)
 	  end
  	  it "proper creds" do
+	    allow(@client).to receive(:search).with(any_args)
 	    request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
 	    get :index
 	    expect(response).to have_http_status(:ok)
@@ -40,11 +41,10 @@ describe HelloController do
 
    context "When testing the HelloController class" do 
       it "should set the greeting field to 'Hello World!'" do 
+		 allow(@client).to receive(:search).with(:DailyAuditorData, '*', {:sort => 'key:asc'}) 
          @controller.index
-         message = @controller.instance_variable_get(:@greeting)
-         expect(message).to eq "Hello World!"
+         greeting = @controller.instance_variable_get(:@greeting)
+         expect(greeting).to eq "Hello World!"
       end
    end
-   
-
 end
