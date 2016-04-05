@@ -2,9 +2,11 @@
 
 describe HelloController do 
 
+
+
    before :each do
    	 @client = double("client")
-   	 @controller = HelloController.new(client) 
+   	 @controller = HelloController.new(@client) 
    end
 
    render_views
@@ -43,5 +45,6 @@ describe HelloController do
          expect(message).to eq "Hello World!"
       end
    end
+   
 
 end
