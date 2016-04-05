@@ -1,12 +1,9 @@
-
-
 describe HelloController do 
-
-
 
    before :each do
    	 @client = double("client")
-   	 @controller = HelloController.new(@client) 
+   	 @time = double("time")
+   	 @controller = HelloController.new(@client, @time) 
    end
 
    render_views
@@ -31,6 +28,7 @@ describe HelloController do
 	    expect(response).to have_http_status(:unauthorized)
 	  end
  	  it "proper creds" do
+ 	  	allow(@time).to receive_message_chain('now.gmtime.strftime').with(any_args)
 	    allow(@client).to receive(:search).with(any_args)
 	    request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
 	    get :index
@@ -41,7 +39,8 @@ describe HelloController do
 
    context "When testing the HelloController class" do 
       it "should set the greeting field to 'Hello World!'" do 
-		 allow(@client).to receive(:search).with(:DailyAuditorData, '*', {:sort => 'key:asc'}) 
+		 allow(@time).to receive_message_chain('now.gmtime.strftime').with("key:%Y-%m-%d").and_return('key:2016-03-05')
+		 allow(@client).to receive(:search).with(:DailyAuditorData, 'key:2016-03-05', {:sort => 'key:asc'}) 
          @controller.index
          greeting = @controller.instance_variable_get(:@greeting)
          expect(greeting).to eq "Hello World!"
