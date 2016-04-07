@@ -1,5 +1,3 @@
-
-
 describe HelloController do 
 
    before :each do
@@ -33,7 +31,7 @@ describe HelloController do
  	  it "returns a 200 when valid proper creds are used" do
  	  	allow(@time).to receive_message_chain('now.gmtime.strftime').with(any_args)
 	    allow(@client).to receive(:search).with(any_args)
-	    request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
+	    setup_successful_auth
 	    get :index
 	    expect(response).to have_http_status(:ok)
 	  end	  
@@ -44,7 +42,7 @@ describe HelloController do
       	 filter = 'key:2016-03-05'
 		 allow(@time).to receive_message_chain('now.gmtime.strftime').with("key:%Y-%m-%d").and_return(filter)
          allow(@client).to receive(:search).with(:DailyAuditorData, filter, {:sort => 'key:asc'}) 
-		 request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
+		 setup_successful_auth
          get :index
          expect(response).to have_http_status(:ok)
       end 
@@ -53,10 +51,14 @@ describe HelloController do
       	 test_date = '2016-03-06'
       	 filter = 'key:' + '2016?03?06'
 		 allow(@client).to receive(:search).with(:DailyAuditorData, filter, {:sort => 'key:asc'}) 
-         request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
+         setup_successful_auth
          get :index, :date => test_date
          expect(response).to have_http_status(:ok)
       end
-
    end
+
+   def setup_successful_auth
+	  request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
+   end
+
 end
