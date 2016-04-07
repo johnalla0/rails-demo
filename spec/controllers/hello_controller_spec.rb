@@ -21,33 +21,42 @@ describe HelloController do
    end
 
    context "Basic Auth for HelloController class" do
- 	  it "no creds 401" do
+ 	  it "returns a 401 when no creds are used" do
 	    get :index
 	    expect(response).to have_http_status(:unauthorized)
 	  end
-	  it "invalid creds 401" do
+	  it "returns a 401 when invalid creds are used" do
 	    request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('foo', 'bar')
 	    get :index
 	    expect(response).to have_http_status(:unauthorized)
 	  end
- 	  it "proper creds" do
+ 	  it "returns a 200 when valid proper creds are used" do
  	  	allow(@time).to receive_message_chain('now.gmtime.strftime').with(any_args)
 	    allow(@client).to receive(:search).with(any_args)
 	    request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
 	    get :index
 	    expect(response).to have_http_status(:ok)
-	    expect(response.body).to match /Hello World/
 	  end	  
    end
 
    context "When testing the HelloController class" do 
-      it "should set the greeting field to 'Hello World!'" do 
+      it "get on index calls Orchestrate client with no date param" do 
       	 filter = 'key:2016-03-05'
 		 allow(@time).to receive_message_chain('now.gmtime.strftime').with("key:%Y-%m-%d").and_return(filter)
+         allow(@client).to receive(:search).with(:DailyAuditorData, filter, {:sort => 'key:asc'}) 
+		 request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
+         get :index
+         expect(response).to have_http_status(:ok)
+      end 
+
+      it "get on index calls Orchestrate client with date param" do 
+      	 test_date = '2016-03-06'
+      	 filter = 'key:' + '2016?03?06'
 		 allow(@client).to receive(:search).with(:DailyAuditorData, filter, {:sort => 'key:asc'}) 
-         @controller.index
-         greeting = @controller.instance_variable_get(:@greeting)
-         expect(greeting).to eq "Hello World!"
+         request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('username', 'password')
+         get :index, :date => test_date
+         expect(response).to have_http_status(:ok)
       end
+
    end
 end

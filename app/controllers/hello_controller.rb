@@ -14,8 +14,12 @@ class HelloController < BaseController
 	end
 
 	def index
-		@greeting = "Hello World!"
-		timestamp = @time.now.gmtime.strftime("key:%Y-%m-%d")
+		date = params[:date]
+		if date != nil
+			timestamp = "key:" + date.gsub("-", "?")
+		else
+			timestamp = @time.now.gmtime.strftime("key:%Y-%m-%d")
+		end
 		@client.search(:DailyAuditorData, timestamp, {:sort => 'key:asc'}) 
 	end
 
