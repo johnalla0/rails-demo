@@ -20,7 +20,8 @@ class HelloController < BaseController
 		else
 			timestamp = @time.now.gmtime.strftime("key:%Y-%m-%d")
 		end
-		@client.search(:DailyAuditorData, timestamp, {:sort => 'key:asc'}) 
+		search_results = @client.search(:DailyAuditorData, timestamp, {:sort => 'key:asc'}) 
+		formatted_results = @results_helper.handle_results(search_results)
 	end
 
 end
